@@ -1,3 +1,16 @@
-boto3
+# --- Framework API ---
+fastapi[all]
+uvicorn
 
-os
+# --- Traitement de données ---
+pandas
+numpy
+
+# --- Machine Learning & NLP ---
+scikit-learn
+sentence-transformers
+torch
+joblib
+
+# --- AWS & Infrastructure ---
+boto3
