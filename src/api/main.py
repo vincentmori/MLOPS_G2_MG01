@@ -8,8 +8,6 @@ from src.api.model_loader import get_model
 app = FastAPI(title="MLOps Job Recommender API")
 
 # --- Stockage des KPIs en mémoire ---
-# Dans un vrai projet, on utiliserait Prometheus ou une DB, 
-# mais pour le rendu projet, un dictionnaire global suffit.
 kpi_store = {
     "total_requests": 0,
     "total_latency": 0.0,
@@ -28,8 +26,7 @@ class UserInput(BaseModel):
     skills: list[Skill]
     top_n: int = 3
 
-# --- Endpoints de Métriques (Fiche 2) ---
-
+# --- Endpoints de Métriques ---
 @app.get("/metrics")
 def get_all_metrics():
     """Résumé global des KPIs"""
@@ -63,17 +60,16 @@ def get_model_metrics():
     }
 
 # --- Endpoint de Prédiction avec Logique de Pondération ---
+# Chargement global au démarrage
+artifacts = get_model()
+model = SentenceTransformer(artifacts['model_name'])
+block_embeddings = artifacts['block_embeddings']
+df_ref = artifacts['df_reference']
 
 @app.post("/predict")
 def predict(data: UserInput):
     start_time = time.time()
     try:
-        # 1. Chargement des artefacts (Inférence real-time)
-        artifacts = get_model()
-        model = SentenceTransformer(artifacts['model_name'])
-        block_embeddings = artifacts['block_embeddings']
-        df_ref = artifacts['df_reference']
-
         # 2. Ta logique de pondération (Issue de analyse.py)
         # Encodage Experience & Interests
         exp_emb = model.encode(data.experiences, convert_to_tensor=True)
@@ -93,7 +89,7 @@ def predict(data: UserInput):
             user_emb = user_emb + skill_emb
 
         # Normalisation (Step 5 de ton analyse)
-        user_emb = torch.nn.functional.normalize(user_emb, p=2, dim=0) if 'user_embeddings' in locals() else torch.nn.functional.normalize(user_emb, p=2, dim=0)
+        user_emb = torch.nn.functional.normalize(user_emb, p=2, dim=0) 
 
         # 3. Calcul de similarité
         # block_embeddings a été pré-calculé dans train.py
