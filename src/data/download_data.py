@@ -1,21 +1,21 @@
-import boto3
 import os
+import boto3
+from dotenv import load_dotenv
+
+# Charger les variables du fichier .env (uniquement en local)
+load_dotenv()
 
 def download_from_s3(bucket_name, s3_file_name):
+    # boto3 va maintenant chercher automatiquement les variables 
+    # AWS_ACCESS_KEY_ID et AWS_SECRET_ACCESS_KEY dans ton environnement
     s3 = boto3.client('s3')
     
-    # On définit le chemin vers le dossier data à la racine du projet
-    # ../../ remonte de src/data/ vers la racine
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    local_dir = os.path.join(base_dir, "data", "raw")
-    local_file_path = os.path.join(local_dir, s3_file_name)
+    local_path = os.path.join("data", "raw", s3_file_name)
+    os.makedirs(os.path.dirname(local_path), exist_ok=True)
     
-    # Créer le dossier data/raw s'il n'existe pas
-    os.makedirs(local_dir, exist_ok=True)
-    
-    print(f"Téléchargement vers : {local_file_path}")
-    s3.download_file(bucket_name, s3_file_name, local_file_path)
-    return local_file_path
+    print(f"Téléchargement de {s3_file_name}...")
+    s3.download_file(bucket_name, s3_file_name, local_path)
+    print("Succès !")
 
 if __name__ == "__main__":
     # Utilise tes vrais identifiants créés précédemment [cite: 110, 111]

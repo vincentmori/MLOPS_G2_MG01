@@ -1,0 +1,7 @@
+{
+    "model_name": "multi-qa-mpnet-base-dot-v1",
+    "num_records": 20,
+    "embedding_dimension": 768,
+    "status": "Success",
+    "sample_similarity_mean": 0.6738241314888
+}
