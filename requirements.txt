@@ -14,3 +14,7 @@ joblib
 
 # --- AWS & Infrastructure ---
 boto3
+
+# --- Application UI ---
+streamlit
+requests
