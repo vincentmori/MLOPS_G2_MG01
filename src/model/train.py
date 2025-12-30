@@ -11,14 +11,13 @@ def train_model():
     if not os.path.exists(input_path):
         raise FileNotFoundError(f"Fichier {input_path} introuvable. Lancez d'abord le pipeline !")
     
-    # Lecture du CSV (celui que tu as envoyé a 'Job' et 'Competences')
+    # Lecture du CSV 
     df = pd.read_csv(input_path)
     
     # 2. Entraîner le modèle
     print("Chargement du modèle SentenceTransformer...")
     model = SentenceTransformer('multi-qa-mpnet-base-dot-v1')
     
-    # ADAPTATION : On combine 'Job' et 'Competences' selon ton nouveau CSV
     # On gère les éventuels noms de colonnes avec/sans majuscules pour être robuste
     job_col = 'Job' if 'Job' in df.columns else 'job'
     comp_col = 'Competences' if 'Competences' in df.columns else 'competences'

@@ -70,15 +70,12 @@ df_ref = artifacts['df_reference']
 def predict(data: UserInput):
     start_time = time.time()
     try:
-        # 2. Ta logique de pondération (Issue de analyse.py)
-        # Encodage Experience & Interests
+        # Logique de pondération des compétences
         exp_emb = model.encode(data.experiences, convert_to_tensor=True)
         int_emb = model.encode(data.interests, convert_to_tensor=True)
         
-        # Moyenne texte libre
         user_emb = (exp_emb + int_emb) / 2
 
-        # Pondération des skills (Répétition selon le niveau)
         if data.skills:
             weighted_skills = []
             for s in data.skills:
@@ -88,14 +85,13 @@ def predict(data: UserInput):
             skill_emb = model.encode(skills_text, convert_to_tensor=True)
             user_emb = user_emb + skill_emb
 
-        # Normalisation (Step 5 de ton analyse)
         user_emb = torch.nn.functional.normalize(user_emb, p=2, dim=0) 
 
-        # 3. Calcul de similarité
+        # Calcul de similarité
         # block_embeddings a été pré-calculé dans train.py
         similarities = util.cos_sim(user_emb, block_embeddings)[0]
 
-        # 4. Top N
+        # Top N
         top_k = torch.topk(similarities, k=data.top_n)
         
         results = []
